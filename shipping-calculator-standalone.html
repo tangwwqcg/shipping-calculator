@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="快速计算国际快递运费和总价">
+    <meta name="keywords" content="运费计算,国际快递,小包专线,运费">
+    <meta name="author" content="运费计算器">
+    
+    <!-- PWA相关meta标签 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="运费计算器">
+    <meta name="msapplication-TileColor" content="#667eea">
+    
+    <!-- PWA manifest -->
+    <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;全球小包专线运费计算器&quot;,&quot;short_name&quot;:&quot;运费计算器&quot;,&quot;description&quot;:&quot;快速计算国际快递运费和总价&quot;,&quot;start_url&quot;:&quot;/&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#667eea&quot;,&quot;theme_color&quot;:&quot;#667eea&quot;,&quot;orientation&quot;:&quot;portrait-primary&quot;,&quot;scope&quot;:&quot;/&quot;,&quot;lang&quot;:&quot;zh-CN&quot;}">
+    
+    <title>全球小包专线运费计算器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .form-section {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .result-item .label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .result-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .result-item .value.rmb {
+            color: #e74c3c;
+        }
+
+        .result-item .value.usd {
+            color: #27ae60;
+        }
+
+        .details-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .details-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .details-list {
+            list-style: none;
+        }
+
+        .details-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .details-list li:last-child {
+            border-bottom: none;
+        }
+
+        .details-list .label {
+            color: #666;
+        }
+
+        .details-list .value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .form-section {
+                padding: 20px;
+            }
+            
+            .form-group input,
+            .form-group select {
+                font-size: 16px; /* 防止iOS缩放 */
+            }
+            
+            .calculate-btn {
+                padding: 18px;
+                font-size: 16px;
+            }
+            
+            .result-item .value {
+                font-size: 16px;
+            }
+        }
+
+        /* PWA全屏模式优化 */
+        @media (display-mode: standalone) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+        }
+
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .calculate-btn:hover {
+                transform: none;
+            }
+            
+            .calculate-btn:active {
+                transform: scale(0.98);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>全球小包专线运费计算器</h1>
+            <p>快速计算国际快递运费和总价</p>
+        </div>
+
+        <div class="form-section">
+            <form id="shippingForm">
+                <div class="form-group">
+                    <label for="country">选择目的国家</label>
+                    <select id="country" required>
+                        <option value="">请选择国家</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="weight">包裹重量 (KG)</label>
+                        <input type="number" id="weight" step="0.01" min="0.01" required placeholder="例如：0.61">
+                    </div>
+                    <div class="form-group">
+                        <label for="cost">商品成本 (元)</label>
+                        <input type="number" id="cost" step="0.01" min="0" required placeholder="例如：82">
+                    </div>
+                </div>
+
+                <button type="submit" class="calculate-btn">计算运费</button>
+            </form>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="result-section" id="resultSection">
+                <div class="result-title">计算结果</div>
+                
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="label">运费</div>
+                        <div class="value rmb" id="shippingFee">¥0.00</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">利润</div>
+                        <div class="value rmb" id="profit">¥0.00</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">总价 (人民币)</div>
+                        <div class="value rmb" id="totalRMB">¥0.00</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">总价 (美元)</div>
+                        <div class="value usd" id="totalUSD">$0.00</div>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="details-title">费用明细</div>
+                    <ul class="details-list" id="detailsList">
+                        <!-- 动态生成 -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全球小包专线价格表数据
+        const shippingData = {
+          "美国": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 0.1", "单价": 80, "挂号费": 23},
+              {"重量范围": "0.1 < W ≤ 0.2", "单价": 70, "挂号费": 25},
+              {"重量范围": "0.2 < W ≤ 2", "单价": 68, "挂号费": 25},
+              {"重量范围": "2 < W ≤ 20", "单价": 60, "挂号费": 25}
+            ]
+          },
+          "英国": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 0.2", "单价": 84, "挂号费": 25},
+              {"重量范围": "0.2 < W ≤ 2", "单价": 82, "挂号费": 23},
+              {"重量范围": "2 < W ≤ 20", "单价": 71, "挂号费": 23}
+            ]
+          },
+          "德国": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 2", "单价": 69, "挂号费": 25},
+              {"重量范围": "2 < W ≤ 30", "单价": 69, "挂号费": 25}
+            ]
+          },
+          "法国": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 0.3", "单价": 62, "挂号费": 18},
+              {"重量范围": "0.3 < W ≤ 2", "单价": 53, "挂号费": 23},
+              {"重量范围": "2 < W ≤ 20", "单价": 56, "挂号费": 23}
+            ]
+          },
+          "意大利": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 0.2", "单价": 69, "挂号费": 13},
+              {"重量范围": "0.2 < W ≤ 2", "单价": 63, "挂号费": 17},
+              {"重量范围": "2 < W ≤ 30", "单价": 63, "挂号费": 17}
+            ]
+          },
+          "西班牙": {
+            "时效": "8-12工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 2", "单价": 153, "挂号费": 28},
+              {"重量范围": "2 < W ≤ 10", "单价": 153, "挂号费": 28}
+            ]
+          },
+          "荷兰": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 0.1", "单价": 80, "挂号费": 23},
+              {"重量范围": "0.1 < W ≤ 0.2", "单价": 70, "挂号费": 25},
+              {"重量范围": "0.2 < W ≤ 2", "单价": 68, "挂号费": 25}
+            ]
+          },
+          "比利时": {
+            "时效": "8-12工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 2", "单价": 117, "挂号费": 31},
+              {"重量范围": "2 < W ≤ 30", "单价": 122, "挂号费": 31}
+            ]
+          },
+          "瑞士": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 20", "单价": 85, "挂号费": 25}
+            ]
+          },
+          "希腊": {
+            "时效": "8-12工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 30", "单价": 77, "挂号费": 20}
+            ]
+          },
+          "葡萄牙": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 30", "单价": 80, "挂号费": 20}
+            ]
+          },
+          "奥地利": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 30", "单价": 75, "挂号费": 22}
+            ]
+          },
+          "瑞典": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 30", "单价": 63, "挂号费": 23}
+            ]
+          },
+          "挪威": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 30", "单价": 72, "挂号费": 23}
+            ]
+          },
+          "丹麦": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 2", "单价": 55, "挂号费": 23},
+              {"重量范围": "2 < W ≤ 30", "单价": 61, "挂号费": 23}
+            ]
+          },
+          "芬兰": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 30", "单价": 80, "挂号费": 22}
+            ]
+          },
+          "波兰": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 30", "单价": 71, "挂号费": 28}
+            ]
+          },
+          "捷克": {
+            "时效": "6-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 0.3", "单价": 87, "挂号费": 26},
+              {"重量范围": "0.3 < W ≤ 2", "单价": 71, "挂号费": 26},
+              {"重量范围": "2 < W ≤ 15", "单价": 67, "挂号费": 26}
+            ]
+          },
+          "墨西哥": {
+            "时效": "8-12工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 0.2", "单价": 82, "挂号费": 18},
+              {"重量范围": "0.2 < W ≤ 0.5", "单价": 82, "挂号费": 19},
+              {"重量范围": "0.5 < W ≤ 1", "单价": 82, "挂号费": 20},
+              {"重量范围": "1 < W ≤ 3", "单价": 82, "挂号费": 22},
+              {"重量范围": "3 < W ≤ 10", "单价": 82, "挂号费": 22}
+            ]
+          },
+          "巴西": {
+            "时效": "15-25工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 0.2", "单价": 87, "挂号费": 37},
+              {"重量范围": "0.2 < W ≤ 0.5", "单价": 87, "挂号费": 37},
+              {"重量范围": "0.5 < W ≤ 1", "单价": 87, "挂号费": 39},
+              {"重量范围": "1 < W ≤ 1.5", "单价": 87, "挂号费": 47},
+              {"重量范围": "1.5 < W ≤ 2", "单价": 87, "挂号费": 51},
+              {"重量范围": "2 < W ≤ 5", "单价": 87, "挂号费": 62},
+              {"重量范围": "5 < W ≤ 10", "单价": 87, "挂号费": 102}
+            ]
+          },
+          "新加坡": {
+            "时效": "6-7工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 30", "单价": 32, "挂号费": 18}
+            ]
+          },
+          "马来西亚": {
+            "时效": "8-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 30", "单价": 24, "挂号费": 18}
+            ]
+          },
+          "泰国": {
+            "时效": "5-6工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 25", "单价": 28, "挂号费": 10}
+            ]
+          },
+          "日本": {
+            "时效": "6-7工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 2", "单价": 35, "挂号费": 6},
+              {"重量范围": "2 < W ≤ 10", "单价": 35, "挂号费": 7}
+            ]
+          },
+          "加拿大": {
+            "时效": "8-15工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 0.15", "单价": 72, "挂号费": 23},
+              {"重量范围": "0.15 < W ≤ 0.3", "单价": 73, "挂号费": 23},
+              {"重量范围": "0.3 < W ≤ 0.45", "单价": 73, "挂号费": 23},
+              {"重量范围": "0.45 < W ≤ 0.75", "单价": 74, "挂号费": 24},
+              {"重量范围": "0.75 < W ≤ 1", "单价": 75, "挂号费": 24},
+              {"重量范围": "1 < W ≤ 1.5", "单价": 75, "挂号费": 25},
+              {"重量范围": "1.5 < W ≤ 2", "单价": 75, "挂号费": 25},
+              {"重量范围": "2 < W ≤ 30", "单价": 79, "挂号费": 25}
+            ]
+          },
+          "澳大利亚": {
+            "时效": "5-10工作日",
+            "价格分段": [
+              {"重量范围": "0 < W ≤ 0.3", "单价": 24, "挂号费": 23},
+              {"重量范围": "0.3 < W ≤ 0.5", "单价": 24, "挂号费": 26},
+              {"重量范围": "0.5 < W ≤ 1", "单价": 24, "挂号费": 27},
+              {"重量范围": "1 < W ≤ 3", "单价": 24, "挂号费": 29},
+              {"重量范围": "3 < W ≤ 20", "单价": 24, "挂号费": 44}
+            ]
+          }
+        };
+
+        // 利润计算规则
+        const profitRules = {
+          "高": {"条件": "成本 > 60", "利润": 25},
+          "中": {"条件": "30 ≤ 成本 ≤ 60", "利润": 20},
+          "低": {"条件": "成本 < 30", "利润": 15}
+        };
+
+        // 汇率
+        const exchangeRate = 7.1;
+
+        // 运费计算器主逻辑
+        class ShippingCalculator {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.populateCountries();
+                this.bindEvents();
+            }
+
+            // 填充国家选择列表
+            populateCountries() {
+                const countrySelect = document.getElementById('country');
+                const countries = Object.keys(shippingData).sort();
+                
+                countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country;
+                    option.textContent = country;
+                    countrySelect.appendChild(option);
+                });
+            }
+
+            // 绑定事件
+            bindEvents() {
+                const form = document.getElementById('shippingForm');
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.calculate();
+                });
+            }
+
+            // 根据重量找到对应的价格分段
+            findPriceSegment(country, weight) {
+                const countryData = shippingData[country];
+                if (!countryData) return null;
+
+                for (let segment of countryData.价格分段) {
+                    const range = segment.重量范围;
+                    // 解析重量范围，例如 "0 < W ≤ 0.1"
+                    const match = range.match(/(\d+(?:\.\d+)?)\s*<\s*W\s*≤\s*(\d+(?:\.\d+)?)/);
+                    if (match) {
+                        const minWeight = parseFloat(match[1]);
+                        const maxWeight = parseFloat(match[2]);
+                        if (weight > minWeight && weight <= maxWeight) {
+                            return segment;
+                        }
+                    }
+                }
+                return null;
+            }
+
+            // 计算利润
+            calculateProfit(cost) {
+                if (cost > 60) {
+                    return { amount: 25, level: '高' };
+                } else if (cost >= 30) {
+                    return { amount: 20, level: '中' };
+                } else {
+                    return { amount: 15, level: '低' };
+                }
+            }
+
+            // 格式化货币
+            formatCurrency(amount, currency = 'RMB') {
+                if (currency === 'RMB') {
+                    return `¥${amount.toFixed(2)}`;
+                } else if (currency === 'USD') {
+                    return `$${amount.toFixed(2)}`;
+                }
+                return amount.toFixed(2);
+            }
+
+            // 显示错误信息
+            showError(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = message;
+                errorDiv.classList.add('show');
+                
+                // 3秒后自动隐藏
+                setTimeout(() => {
+                    errorDiv.classList.remove('show');
+                }, 3000);
+            }
+
+            // 隐藏错误信息
+            hideError() {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.classList.remove('show');
+            }
+
+            // 主计算函数
+            calculate() {
+                try {
+                    // 获取输入值
+                    const country = document.getElementById('country').value;
+                    const weight = parseFloat(document.getElementById('weight').value);
+                    const cost = parseFloat(document.getElementById('cost').value);
+
+                    // 验证输入
+                    if (!country) {
+                        this.showError('请选择目的国家');
+                        return;
+                    }
+
+                    if (!weight || weight <= 0) {
+                        this.showError('请输入有效的重量');
+                        return;
+                    }
+
+                    if (!cost || cost < 0) {
+                        this.showError('请输入有效的成本');
+                        return;
+                    }
+
+                    // 查找价格分段
+                    const priceSegment = this.findPriceSegment(country, weight);
+                    if (!priceSegment) {
+                        this.showError('未找到对应的重量区间，请检查重量是否在有效范围内');
+                        return;
+                    }
+
+                    // 计算运费
+                    const shippingFee = weight * priceSegment.单价 + priceSegment.挂号费;
+
+                    // 计算利润
+                    const profit = this.calculateProfit(cost);
+
+                    // 计算总价
+                    const totalRMB = cost + shippingFee + profit.amount;
+                    const totalUSD = totalRMB / exchangeRate;
+
+                    // 隐藏错误信息
+                    this.hideError();
+
+                    // 显示结果
+                    this.displayResults({
+                        country: country,
+                        weight: weight,
+                        cost: cost,
+                        priceSegment: priceSegment,
+                        shippingFee: shippingFee,
+                        profit: profit,
+                        totalRMB: totalRMB,
+                        totalUSD: totalUSD
+                    });
+
+                } catch (error) {
+                    console.error('计算错误:', error);
+                    this.showError('计算过程中出现错误，请检查输入数据');
+                }
+            }
+
+            // 显示计算结果
+            displayResults(results) {
+                const resultSection = document.getElementById('resultSection');
+                
+                // 更新主要结果
+                document.getElementById('shippingFee').textContent = this.formatCurrency(results.shippingFee);
+                document.getElementById('profit').textContent = this.formatCurrency(results.profit.amount);
+                document.getElementById('totalRMB').textContent = this.formatCurrency(results.totalRMB);
+                document.getElementById('totalUSD').textContent = this.formatCurrency(results.totalUSD, 'USD');
+
+                // 更新详细信息
+                this.updateDetails(results);
+
+                // 显示结果区域
+                resultSection.classList.add('show');
+                
+                // 滚动到结果区域
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // 更新详细信息
+            updateDetails(results) {
+                const detailsList = document.getElementById('detailsList');
+                detailsList.innerHTML = '';
+
+                const details = [
+                    { label: '目的国家', value: results.country },
+                    { label: '包裹重量', value: `${results.weight} KG` },
+                    { label: '重量区间', value: results.priceSegment.重量范围 },
+                    { label: '单价', value: `¥${results.priceSegment.单价}/KG` },
+                    { label: '挂号费', value: `¥${results.priceSegment.挂号费}` },
+                    { label: '运费计算', value: `${results.weight} × ${results.priceSegment.单价} + ${results.priceSegment.挂号费} = ¥${results.shippingFee.toFixed(2)}` },
+                    { label: '商品成本', value: this.formatCurrency(results.cost) },
+                    { label: '利润等级', value: `${results.profit.level} (${this.formatCurrency(results.profit.amount)})` },
+                    { label: '汇率', value: `1 USD = ${exchangeRate} CNY` }
+                ];
+
+                details.forEach(detail => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span class="label">${detail.label}</span>
+                        <span class="value">${detail.value}</span>
+                    `;
+                    detailsList.appendChild(li);
+                });
+            }
+        }
+
+        // 页面加载完成后初始化计算器
+        document.addEventListener('DOMContentLoaded', () => {
+            new ShippingCalculator();
+        });
+    </script>
+</body>
+</html>

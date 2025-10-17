@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问题修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 问题修复测试</h1>
+    
+    <div class="test-section">
+        <h2>1. 国家选择测试</h2>
+        <div id="countryStatus" class="status info">正在测试...</div>
+        <select id="testCountry">
+            <option value="">请选择国家</option>
+        </select>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 数据加载测试</h2>
+        <div id="dataStatus" class="status info">正在测试...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. PWA安装测试</h2>
+        <div id="pwaStatus" class="status info">正在测试...</div>
+    </div>
+
+    <script src="shipping-data.js"></script>
+    <script>
+        // 测试数据加载
+        function testDataLoading() {
+            const status = document.getElementById('dataStatus');
+            
+            if (typeof shippingData !== 'undefined') {
+                const countryCount = Object.keys(shippingData).length;
+                status.textContent = `✅ 数据加载成功！共加载 ${countryCount} 个国家`;
+                status.className = 'status success';
+                
+                // 测试国家选择
+                testCountrySelection();
+            } else {
+                status.textContent = '❌ 数据加载失败';
+                status.className = 'status error';
+            }
+        }
+
+        // 测试国家选择
+        function testCountrySelection() {
+            const status = document.getElementById('countryStatus');
+            const select = document.getElementById('testCountry');
+            
+            if (typeof shippingData !== 'undefined') {
+                const countries = Object.keys(shippingData).sort();
+                
+                countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country;
+                    option.textContent = country;
+                    select.appendChild(option);
+                });
+                
+                status.textContent = `✅ 国家选择正常！共 ${countries.length} 个国家可选`;
+                status.className = 'status success';
+            } else {
+                status.textContent = '❌ 无法加载国家列表';
+                status.className = 'status error';
+            }
+        }
+
+        // 测试PWA功能
+        function testPWA() {
+            const status = document.getElementById('pwaStatus');
+            
+            let pwaScore = 0;
+            let maxScore = 0;
+            
+            // 检查Service Worker
+            maxScore += 1;
+            if ('serviceWorker' in navigator) {
+                pwaScore += 1;
+            }
+            
+            // 检查Manifest
+            maxScore += 1;
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            if (manifestLink) {
+                pwaScore += 1;
+            }
+            
+            // 检查HTTPS
+            maxScore += 1;
+            if (location.protocol === 'https:' || location.hostname === 'localhost') {
+                pwaScore += 1;
+            }
+            
+            const percentage = Math.round((pwaScore / maxScore) * 100);
+            
+            if (percentage >= 80) {
+                status.textContent = `✅ PWA功能正常！评分: ${percentage}%`;
+                status.className = 'status success';
+            } else if (percentage >= 60) {
+                status.textContent = `⚠️ PWA功能部分正常，评分: ${percentage}%`;
+                status.className = 'status info';
+            } else {
+                status.textContent = `❌ PWA功能需要HTTPS环境，评分: ${percentage}%`;
+                status.className = 'status error';
+            }
+        }
+
+        // 页面加载完成后运行测试
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                testDataLoading();
+                testPWA();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

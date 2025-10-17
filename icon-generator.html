@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA图标生成器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .icon-container {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .icon {
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .size-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .download-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .download-btn:hover {
+            background: #0056b3;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .instructions {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 PWA应用图标生成器</h1>
+    
+    <div class="instructions">
+        <h3>📋 使用说明：</h3>
+        <ol>
+            <li>右键点击每个图标，选择"图片另存为"</li>
+            <li>保存为PNG格式到icons文件夹</li>
+            <li>文件名格式：icon-尺寸x尺寸.png（如：icon-192x192.png）</li>
+            <li>或者点击"下载"按钮直接下载</li>
+        </ol>
+    </div>
+    
+    <div id="iconContainer"></div>
+
+    <script>
+        // 图标尺寸列表
+        const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        // 生成图标
+        function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            canvas.className = 'icon';
+            canvas.style.width = Math.min(size, 128) + 'px';
+            canvas.style.height = Math.min(size, 128) + 'px';
+            
+            const ctx = canvas.getContext('2d');
+            
+            // 创建渐变背景
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            // 绘制圆形背景
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2 - 4, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // 绘制包裹图标
+            ctx.fillStyle = 'white';
+            ctx.font = `${size * 0.4}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('📦', size/2, size/2);
+            
+            return canvas;
+        }
+        
+        // 下载图标
+        function downloadIcon(size) {
+            const canvas = generateIcon(size);
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // 生成所有图标
+        const container = document.getElementById('iconContainer');
+        
+        iconSizes.forEach(size => {
+            const iconDiv = document.createElement('div');
+            iconDiv.className = 'icon-container';
+            
+            const canvas = generateIcon(size);
+            const label = document.createElement('div');
+            label.className = 'size-label';
+            label.textContent = `${size}x${size}`;
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'download-btn';
+            downloadBtn.textContent = '下载';
+            downloadBtn.onclick = () => downloadIcon(size);
+            
+            iconDiv.appendChild(canvas);
+            iconDiv.appendChild(label);
+            iconDiv.appendChild(downloadBtn);
+            
+            container.appendChild(iconDiv);
+        });
+        
+        // 生成所有图标并下载
+        function downloadAllIcons() {
+            iconSizes.forEach(size => {
+                setTimeout(() => downloadIcon(size), size * 10); // 延迟下载避免浏览器阻止
+            });
+        }
+        
+        // 添加批量下载按钮
+        const batchBtn = document.createElement('button');
+        batchBtn.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        `;
+        batchBtn.textContent = '📥 批量下载所有图标';
+        batchBtn.onclick = downloadAllIcons;
+        document.body.appendChild(batchBtn);
+    </script>
+</body>
+</html>

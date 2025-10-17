@@ -1,0 +1,29 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景圆形 -->
+  <circle cx="256" cy="256" r="240" fill="url(#gradient)" stroke="#fff" stroke-width="8"/>
+  
+  <!-- 地球图标 -->
+  <circle cx="256" cy="200" r="80" fill="none" stroke="#fff" stroke-width="6"/>
+  <path d="M176 200 Q256 120 336 200" fill="none" stroke="#fff" stroke-width="6"/>
+  <path d="M176 200 Q256 280 336 200" fill="none" stroke="#fff" stroke-width="6"/>
+  
+  <!-- 包裹图标 -->
+  <rect x="200" y="280" width="112" height="80" rx="8" fill="#fff"/>
+  <rect x="200" y="280" width="112" height="20" rx="8" fill="#667eea"/>
+  
+  <!-- 计算器符号 -->
+  <circle cx="240" cy="320" r="8" fill="#667eea"/>
+  <circle cx="272" cy="320" r="8" fill="#667eea"/>
+  <circle cx="240" cy="340" r="8" fill="#667eea"/>
+  <circle cx="272" cy="340" r="8" fill="#667eea"/>
+  
+  <!-- 加号 -->
+  <path d="M320 320 L320 340 M310 330 L330 330" stroke="#667eea" stroke-width="4" stroke-linecap="round"/>
+</svg>
