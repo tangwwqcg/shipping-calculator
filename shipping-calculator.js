@@ -59,8 +59,9 @@ class ShippingCalculator {
 
         for (let segment of countryData.价格分段) {
             const range = segment.重量范围;
-            // 解析重量范围，例如 "0 < W ≤ 0.1"
-            const match = range.match(/(\d+(?:\.\d+)?)\s*<\s*W\s*≤\s*(\d+(?:\.\d+)?)/);
+            // 解析重量范围，支持多种格式：
+            // "0 < W ≤ 0.1" 或 "0.05＜W≤0.1" 或 "0＜W≤0.3"
+            const match = range.match(/(\d+(?:\.\d+)?)\s*[<＜]\s*W\s*[≤≤]\s*(\d+(?:\.\d+)?)/);
             if (match) {
                 const minWeight = parseFloat(match[1]);
                 const maxWeight = parseFloat(match[2]);
