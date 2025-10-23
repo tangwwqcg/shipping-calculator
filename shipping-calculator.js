@@ -7,6 +7,8 @@ class ShippingCalculator {
     init() {
         this.populateCountries();
         this.bindEvents();
+        this.checkOfflineStatus();
+        this.setupOfflineHandlers();
     }
 
     // 填充国家选择列表
@@ -28,6 +30,25 @@ class ShippingCalculator {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             this.calculate();
+        });
+    }
+
+    // 检查离线状态
+    checkOfflineStatus() {
+        const offlineIndicator = document.getElementById('offlineIndicator');
+        if (!navigator.onLine) {
+            offlineIndicator.classList.add('show');
+        }
+    }
+
+    // 设置离线处理
+    setupOfflineHandlers() {
+        window.addEventListener('online', () => {
+            document.getElementById('offlineIndicator').classList.remove('show');
+        });
+
+        window.addEventListener('offline', () => {
+            document.getElementById('offlineIndicator').classList.add('show');
         });
     }
 
