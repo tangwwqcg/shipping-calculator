@@ -103,6 +103,116 @@
             transition: border-color 0.3s ease;
         }
 
+        /* 国家搜索功能样式 */
+        .country-search-container {
+            position: relative;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .search-results.show {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-result-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item.selected {
+            background-color: #e3f2fd;
+        }
+
+        .country-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .country-delivery-time {
+            font-size: 12px;
+            color: #666;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .no-results {
+            padding: 15px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .search-highlight {
+            background-color: #fff3cd;
+            font-weight: 600;
+        }
+
+        /* 常用国家快速选择 */
+        .quick-select {
+            margin-top: 15px;
+        }
+
+        .quick-select-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .quick-select-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .quick-select-btn {
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #333;
+        }
+
+        .quick-select-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .quick-select-btn:active {
+            transform: scale(0.95);
+        }
+
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
@@ -302,6 +412,15 @@
                 font-size: 16px;
             }
             
+            .search-results {
+                max-height: 150px;
+            }
+            
+            .search-result-item {
+                padding: 15px;
+                font-size: 16px;
+            }
+            
             .calculate-btn {
                 padding: 18px;
                 font-size: 16px;
@@ -355,7 +474,17 @@
             <form id="shippingForm">
                 <div class="form-group">
                     <label for="country">选择目的国家</label>
-                    <select id="country" required>
+                    <div class="country-search-container">
+                        <input type="text" id="countrySearch" placeholder="输入国家名称搜索..." autocomplete="off">
+                        <div class="search-results" id="searchResults"></div>
+                        <div class="quick-select">
+                            <div class="quick-select-title">常用国家：</div>
+                            <div class="quick-select-buttons" id="quickSelectButtons">
+                                <!-- 动态生成常用国家按钮 -->
+                            </div>
+                        </div>
+                    </div>
+                    <select id="country" required style="display: none;">
                         <option value="">请选择国家</option>
                     </select>
                 </div>
@@ -410,6 +539,7 @@
 
     <!-- 引入外部数据文件 -->
     <script src="shipping-data.js"></script>
+    <script src="country-search.js"></script>
     <script src="shipping-calculator.js"></script>
     <script>
 

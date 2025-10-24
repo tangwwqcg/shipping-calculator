@@ -1,27 +1,20 @@
 // 运费计算器主逻辑
 class ShippingCalculator {
     constructor() {
+        this.countrySearch = null;
         this.init();
     }
 
     init() {
-        this.populateCountries();
+        this.initCountrySearch();
         this.bindEvents();
         this.checkOfflineStatus();
         this.setupOfflineHandlers();
     }
 
-    // 填充国家选择列表
-    populateCountries() {
-        const countrySelect = document.getElementById('country');
-        const countries = Object.keys(shippingData).sort();
-        
-        countries.forEach(country => {
-            const option = document.createElement('option');
-            option.value = country;
-            option.textContent = country;
-            countrySelect.appendChild(option);
-        });
+    // 初始化国家搜索功能
+    initCountrySearch() {
+        this.countrySearch = new CountrySearch();
     }
 
     // 绑定事件
@@ -116,7 +109,7 @@ class ShippingCalculator {
     calculate() {
         try {
             // 获取输入值
-            const country = document.getElementById('country').value;
+            const country = this.countrySearch.getSelectedCountry();
             const weight = parseFloat(document.getElementById('weight').value);
             const cost = parseFloat(document.getElementById('cost').value);
 
