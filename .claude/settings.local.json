@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la .cursor*)",
+      "Bash(ls -la *.js)",
+      "Bash(ls -la *.xlsx)",
+      "Bash(node import-tool.js \"全球 空运小包2026年3月.xlsx\" --preview-only)",
+      "Bash(node:*)"
+    ]
+  }
+}

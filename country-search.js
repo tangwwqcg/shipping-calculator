@@ -8,10 +8,10 @@ class CountrySearch {
         this.selectedIndex = -1;
         this.filteredCountries = [];
         
-        // 常用国家列表
+        // 常用国家列表（必须存在于 shippingData 中）
         this.popularCountries = [
-            '美国', '英国', '德国', '法国', '意大利', '西班牙', 
-            '日本', '韩国', '澳大利亚1区', '加拿大', '巴西'
+            '美国', '英国', '德国', '法国', '意大利', '西班牙',
+            '加拿大', '荷兰', '比利时', '波兰', '奥地利', '瑞典'
         ];
         
         this.init();
