@@ -461,7 +461,7 @@ const shippingData = {
   }
 };
 
-const exchangeRate = 7.1;
+const exchangeRate = 6.7411;
 
 // 导出供 Node.js 使用
 if (typeof module !== 'undefined' && module.exports) {

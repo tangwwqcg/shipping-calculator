@@ -248,7 +248,7 @@ class OfflineDataManager {
                 "中": {"条件": "30 ≤ 成本 ≤ 60", "利润": 20},
                 "低": {"条件": "成本 < 30", "利润": 15}
             },
-            exchangeRate: 7.1,
+            exchangeRate: 6.7411,
             lastUpdated: new Date().toISOString()
         };
     }

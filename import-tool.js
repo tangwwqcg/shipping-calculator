@@ -350,7 +350,7 @@ function parseData(rows, options = {}) {
 /**
  * 生成 shipping-data.js 内容
  */
-function generateShippingData(data, exchangeRate = 7.1) {
+function generateShippingData(data, exchangeRate = 6.7411) {
     // 按国家名排序
     const sortedCountries = Object.keys(data).sort();
     const sortedData = {};
@@ -423,7 +423,7 @@ function showHelp() {
 
 选项:
   -o, --output <文件>    输出文件路径 (默认: shipping-data.js)
-  -r, --rate <数字>      汇率 (默认: 7.1)
+  -r, --rate <数字>      汇率 (默认: 6.7411)
   --preview-only         仅预览，不写入文件
   --dry-run              试运行，显示详细信息但不写入
   -h, --help             显示帮助
@@ -445,7 +445,7 @@ function main() {
 
     const inputFile = args[0];
     let outputFile = 'shipping-data.js';
-    let exchangeRate = 7.1;
+    let exchangeRate = 6.7411;
     let previewOnly = false;
     let dryRun = false;
 
@@ -458,7 +458,7 @@ function main() {
                 break;
             case '-r':
             case '--rate':
-                exchangeRate = parseFloat(args[++i]) || 7.1;
+                exchangeRate = parseFloat(args[++i]) || 6.7411;
                 break;
             case '--preview-only':
                 previewOnly = true;
